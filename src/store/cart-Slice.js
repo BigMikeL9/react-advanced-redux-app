@@ -1,6 +1,8 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 
-// REMEMBER: Put as much logic in the Redux Reducer functions rather than in components that dispatch actions to the Redux Reducer funciton
+// --------------------------------------------------------
+// REMEMBER: Put as much logic in the Redux Reducer functions rather than in components that dispatch actions to the Redux Reducer function
+// --------------------------------------------------------
 
 const initialState = { cartItems: [], totalQuantity: 0, totalPrice: 0 };
 
@@ -15,24 +17,50 @@ const cartSlice = createSlice({
       );
 
       //   console.log(current(state));
-      //   console.log("NEW ITEM", action.payload.newItem);
+      // console.log("NEW ITEM", action.payload.newItem);
 
       if (existingItem) {
-        console.log("ITEM TO UPDATE: ", current(state.cartItems));
-
+        // -- change existing item property values
         existingItem.quantity++;
-        existingItem.price = existingItem.price + action.payload.newItem.price;
+        existingItem.totalPrice =
+          existingItem.totalPrice + action.payload.newItem.price;
 
-        console.log("UPDATED ITEM: ", current(state.cartItems));
+        state.totalQuantity++;
+        state.totalPrice = state.totalPrice + action.payload.newItem.price;
+
+        // console.log("CartItems AFTER UPDATE: ", current(state.cartItems));
       } else {
-        // remember even tho we are using 'push' method here (which we should NOT use when updating state in standard redux, because we should NOT directly manipulate the state instead override it with the same initial structure). We are not directly manipulating the state here, immer package returns a new state that overrides the previous state with the same structure.
+        // ------------------------------
+        // REMEMBER even tho we are using 'push' method here (which we should NOT use when updating state in standard redux, because we should NOT directly manipulate state properties, instead override it with the same initial state structure). We are not directly manipulating the state here, immer package returns a new state that overrides the previous state, with the same structure, while copying over all the other state properties that did not change.
+        // ------------------------------
 
         state.cartItems.push(newItem);
-        console.log(current(state));
+        state.totalQuantity++;
+        state.totalPrice = state.totalPrice + newItem.price;
       }
+
+      console.log(current(state));
     },
 
-    removeItemFromCart(state, action) {},
+    removeItemFromCart(state, action) {
+      const itemId = action.payload.item.id;
+
+      const existingItem = state.cartItems.find((item) => item.id === itemId);
+
+      if (existingItem.quantity !== 1) {
+        existingItem.quantity--;
+        existingItem.totalPrice = existingItem.totalPrice - existingItem.price;
+
+        state.totalQuantity--;
+        state.totalPrice = state.totalPrice - existingItem.price;
+      } else {
+        state.cartItems = state.cartItems.filter((item) => item.id !== itemId);
+        state.totalQuantity--;
+        state.totalPrice = state.totalPrice - existingItem.price;
+      }
+
+      console.log(current(state));
+    },
   },
 });
 

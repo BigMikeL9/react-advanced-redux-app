@@ -8,14 +8,12 @@ import classes from "./ProductItem.module.css";
 const ProductItem = (props) => {
   const dispatch = useDispatch();
 
-  console.log(cartActions);
-
   const { id, title, price, description } = props;
 
   const addToCartHandler = () => {
     dispatch(
       cartActions.addItemToCart({
-        newItem: { id, title, price, quantity: 1 },
+        newItem: { id, title, price, totalPrice: price, quantity: 1 },
       })
     );
   };
