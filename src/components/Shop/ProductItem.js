@@ -10,12 +10,33 @@ const ProductItem = (props) => {
 
   const { id, title, price, description } = props;
 
-  const addToCartHandler = () => {
+  const addToCartHandler = async () => {
+    const newItem = { id, title, price, totalPrice: price, quantity: 1 };
+
     dispatch(
       cartActions.addItemToCart({
-        newItem: { id, title, price, totalPrice: price, quantity: 1 },
+        newItem: newItem,
       })
     );
+
+    // -----------------------------------------------------------
+    // -- Send Item to database
+    const response = await fetch(
+      "https://react-router-quotes-app-db817-default-rtdb.firebaseio.com/cart.json",
+      {
+        method: "POST",
+        body: JSON.stringify(newItem),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log(response.status);
+
+    // -- Firebase returns a promise after we SEND a post request
+    const data = await response.json();
+    // -----------------------------------------------------------
   };
 
   return (
