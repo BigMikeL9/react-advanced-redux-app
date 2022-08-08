@@ -59,6 +59,20 @@ const cartSlice = createSlice({
         state.totalPrice = state.totalPrice - existingItem.price;
       }
 
+      // console.log(current(state));
+    },
+
+    replaceCartItems(state, action) {
+      state.cartItems = action.payload.cartItems;
+
+      state.totalQuantity = action.payload.cartItems.reduce(
+        (acc, curr) => acc.quantity + curr.quantity
+      );
+
+      state.totalPrice = action.payload.cartItems.reduce(
+        (acc, curr) => acc.totalPrice + curr.totalPrice
+      );
+
       console.log(current(state));
     },
   },

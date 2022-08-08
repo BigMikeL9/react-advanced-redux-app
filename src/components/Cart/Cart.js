@@ -12,10 +12,9 @@ const Cart = (props) => {
   const cartStore = useSelector((state) => state.cart);
 
   const { cartItems } = cartStore;
-  console.log(cartItems);
 
   //-----------------------------------------------------------
-  // -- fetch cart items from database
+  // -- fetch cart items from database as app starts
   const fetchCartItemsHandler = useCallback(async () => {
     try {
       const response = await fetch(
@@ -26,17 +25,17 @@ const Cart = (props) => {
 
       if (!response.ok) throw new Error("Something went WRONG!!!");
 
-      // console.log(data);
+      console.log(data);
 
-      const fetchedCartItems = Object.values(data);
+      dispatch(cartActions.replaceCartItems({ cartItems: data }));
 
-      fetchedCartItems.forEach((item) => {
-        dispatch(cartActions.addItemToCart({ newItem: item }));
-      });
+      // data.forEach((item) => {
+      //   dispatch(cartActions.addItemToCart({ newItem: item }));
+      // });
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     fetchCartItemsHandler();
